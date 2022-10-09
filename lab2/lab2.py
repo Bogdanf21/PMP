@@ -1,74 +1,84 @@
-
 import numpy as np
 from scipy import stats
 
 import matplotlib.pyplot as plt
 import arviz as az
+import _tkinter
 
 
 def problem1():
     np.random.seed(1)
+    x = []
+    for i in range(0, 10000):
+        if stats.binom.rvs(n=1, p=0.4, size=1) == 0:
+            x.append(stats.expon.rvs(0, scale=1 / 4, size=1)[0])
+        else:
+            x.append(stats.expon.rvs(0, scale=1 / 6, size=1)[0])
 
-    # x = stats.norm.rvs(0, 1, size=10000)  # Distributie normala cu media 0 si deviatie standard 1, 1000 samples y =
-    # stats.uniform.rvs(-1, 2, size=10000)  # Distributie uniforma intre -1 si 1, 1000 samples . Primul parametru
-    # fiind limita inferioara a intervalului, al doilea parametru fiind "marimea" intervalului, aka [-1,-1+2] = [-1,
-    # z = x + y  # Compunerea prin insumare a celor 2 distributii
+    az.plot_posterior({'Average:': x})
 
-    m1 = stats.expon.rvs(0, 1 / 4, size=4000)
-    m2 = stats.expon.rvs(0, 1 / 6, size=6000)
-    avg = (np.concatenate([m1, m2]))
+    az.plot_density({'Density': np.array(x)}, bw=0.001)  # bw is for the graph to be more accurate
 
-    x = stats.norm.rvs(0, 1, size=10000)  # Distributie normala cu media 0 si deviatie standard 1, 1000 samples
-    y = stats.uniform.rvs(-1, 2, size=10000)
-
-    # az.plot_posterior({'Mechanic 1': m1})
-    # az.plot_posterior({'Mechanic 2': m2})
-    az.plot_posterior({'Average': avg})
-    az.plot_density(avg,bw=0.001)  # bw is for the graph to be more accurate
     plt.show()
 
 
 # problem 2 ######################################################################
 def problem2():
-    # latency = stats.expon.rvs(0, 1 / 4, size=SAMPLE_SIZE_FOR_EACH_SERVER)
-
-    server1 = stats.gamma.rvs(4, scale=1 / 3, size=int(10000 * 0.25)) + stats.expon.rvs(0, 1 / 4, size = int(10000 * 0.25))
-    server2 = stats.gamma.rvs(4, scale=1 / 2, size=int(10000 * 0.25)) + stats.expon.rvs(0, 1 / 4, size = int(10000 * 0.25))
-    server3 = stats.gamma.rvs(5, scale=1 / 2, size=int(10000 * 0.3)) + stats.expon.rvs(0, 1 / 4, size = int(10000 * 0.3))
-    server4 = stats.gamma.rvs(5, scale=1 / 3, size=int(10000 * 0.2)) + stats.expon.rvs(0, 1 / 4, size = int(10000 * 0.2))
-
-    avg = np.concatenate([server1, server2, server3, server4])
+    latency = stats.expon.rvs(0, 1 / 4, size=10000)
+    x = []
+    for i in range(0, 10000):
+        match np.random.choice(a=[1, 2, 3, 4], p=[0.25, 0.25, 0.3, 0.2], size=1)[0]:
+            case 1:
+                x.append(stats.gamma.rvs(4, scale=1 / 3, size=1)[0])
+            case 2:
+                x.append(stats.gamma.rvs(4, scale=1 / 2, size=1)[0])
+            case 3:
+                x.append(stats.gamma.rvs(5, scale=1 / 2, size=1)[0])
+            case 4:
+                x.append(stats.gamma.rvs(5, scale=1 / 3, size=1)[0])
+    x += latency
     favorable = 0
-    for i in avg:
+    for i in x:
         if i > 3:
             favorable += 1
 
-    print("Probability: ", favorable/10000)
+    print("Probability: ", favorable / 10000)
 
-    az.plot_posterior({"Avg:": avg})
+    az.plot_density({"Avg:": x})
     plt.show()
 
 
 def problem3():
-    # toss 1 and toss 2 are independent => p(t1 ^ t2) = p(t1) * p(t2)
-    # toss1 = np.random.choice(a=['s', 'b'], p=[0.5, 0.5], size=1)
-    # toss2 = np.random.choice(a=['s', 'b'], p=[0.3, 0.7], size=1)
-    # ss - 0, sb - 1, bs - 2, bb - 3
-    chars = ['ss', 'sb', 'bs', 'bb']
-    values = []
-    for i in range(0,100):
-        experiment = np.random.choice(a=[0, 1, 2, 3], p=[0.5*0.3, 0.5*0.7, 0.5*0.3, 0.5*0.7], size=10)
-        values.append(experiment)
-    values = np.array(values)
+    ss = []
+    sb = []
+    bs = []
+    bb = []
+    for i in range(0, 100):
+        experiment = []
+        for i in range(0, 10):
+            toss1 = np.random.choice(a=['s', 'b'], p=[0.5, 0.5], size=1)[0]
+            toss2 = np.random.choice(a=['s', 'b'], p=[0.3, 0.7], size=1)[0]
+            match toss1, toss2:
+                case 's', 's':
+                    experiment.append('ss')
+                case 's', 'b':
+                    experiment.append('sb')
+                case 'b', 's':
+                    experiment.append('bs')
+                case 'b', 'b':
+                    experiment.append('bb')
+        ss.append(experiment.count('ss'))
+        sb.append(experiment.count('sb'))
+        bs.append(experiment.count('bs'))
+        bb.append(experiment.count('bb'))
 
-    plt.xticks([0, 1, 2, 3], chars)
-
-
-    az.plot_density(values)
-
-
+    az.plot_posterior({"Stema, Stema": np.array(ss)})
+    az.plot_posterior({"stema, ban": np.array(sb)})
+    az.plot_posterior({"ban, stema" : np.array(bs)})
+    az.plot_posterior({"ban, ban" : np.array(bb)})
     plt.show()
-#problem1()
-#problem2()
-problem3()
 
+
+# problem1()
+# problem2()
+problem3()
