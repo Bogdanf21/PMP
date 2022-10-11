@@ -16,9 +16,9 @@ def problem1():
             x.append(stats.expon.rvs(0, scale=1 / 6, size=1)[0])
 
     az.plot_posterior({'Average:': x})
-
     az.plot_density({'Density': np.array(x)}, bw=0.001)  # bw is for the graph to be more accurate
-
+    print("Mean: ", np.mean(x))
+    print("Stdev: ", np.std(x))
     plt.show()
 
 
@@ -71,7 +71,6 @@ def problem3():
         sb.append(experiment.count('sb'))
         bs.append(experiment.count('bs'))
         bb.append(experiment.count('bb'))
-
     az.plot_posterior({"Stema, Stema": np.array(ss)})
     az.plot_posterior({"stema, ban": np.array(sb)})
     az.plot_posterior({"ban, stema" : np.array(bs)})
@@ -79,6 +78,6 @@ def problem3():
     plt.show()
 
 
-# problem1()
+problem1()
 # problem2()
-problem3()
+#problem3()
