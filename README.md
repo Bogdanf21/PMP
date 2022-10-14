@@ -1,9 +1,5 @@
 # PMP-2022
-## Instalare
-Trebuie instalat o versiune de Python >3.8 (https://www.python.org/downloads/)
 
-Pentru instalarea librariilor necesare, porniti de la lista din requirements.txt
-```
-pip install -r requirements.txt
-```
-
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Bogdanf21/PMP/master)
+.. image:: https://mybinder.org/badge_logo.svg
+ :target: https://mybinder.org/v2/gh/Bogdanf21/PMP/master
