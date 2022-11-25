@@ -15,9 +15,9 @@ if __name__ == "__main__":
     print(data.shape[0])
     model = pm.Model()
     with model:
-        b0 = pm.Normal('b0', mu=0, sd=10)
-        b1 = pm.Normal('b1', mu=0, sd=10)
-        b2 = pm.Normal('b2', mu=0, sd=10)
+        b0 = pm.Normal('b0', mu=0, sd=7)
+        b1 = pm.Normal('b1', mu=0, sd=7)
+        b2 = pm.Normal('b2', mu=0, sd=7)
 
         niu = b0 + pm.math.dot(b1, gre) + pm.math.dot(b2, gpa)
         theta = pm.Deterministic('θ', pm.math.sigmoid(niu))
